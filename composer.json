@@ -1,0 +1,28 @@
+{
+    "name": "telex/telexclient",
+    "description": "Laravel package for sending messages(emails/sms) when events occur via Telex(https://telex.im)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chibuzor",
+            "email": "chibuzor.in@hotels.ng"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3@dev"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "telex\\telexclient\\Providers\\TelexServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Telex\\": "src/"
+        }
+    }
+}
