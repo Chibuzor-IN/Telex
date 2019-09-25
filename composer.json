@@ -13,13 +13,6 @@
     "require": {
         "guzzlehttp/guzzle": "^6.3@dev"
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "telex\\telexclient\\Providers\\TelexServiceProvider"
-            ]
-        }
-    },
     "autoload": {
         "psr-4": {
             "Telex\\": "src/"
