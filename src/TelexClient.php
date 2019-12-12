@@ -41,7 +41,7 @@ class TelexClient
             $data['metadata']['receiver_email'] = $receiverEmail;
         }
 
-        $data = array_merge($data['metadata'], $metadataOptions);
+        $data['metadata'] = array_merge($data['metadata'], $metadataOptions);
 
         $payload = [
             'json' => $data
