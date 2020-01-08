@@ -3,8 +3,6 @@
 namespace Telex;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise;
-
 
 class TelexClient
 {
@@ -19,15 +17,20 @@ class TelexClient
         $this->organizationKey = $organizationKey;
         $this->client = new Client([
             'headers' => [
-                'Content-Type' => 'application/json',
                 'ORGANIZATION-KEY' => $this->organizationKey
             ]
         ]);
     }
 
-    public function sendEvent(string $eventName, array $customer, array $placeholderData, array $tagData=[], string $receiverEmail=null, array $metadataOptions=[])
+    public function sendEvent(string $eventName, array $customer, array $placeholderData, array $options=[])
     {
         $url = "{$this->telexDomain}/api/events";
+
+        $receiverEmail = $options['receiver_email'] ?? '';
+        $tagData = $options['tag_data'] ?? [];
+        $metadata = $options['metadata'] ?? [];
+        $organizationKey = $options['organization_key'] ?? '';
+
         $data = [
             'customer' => $customer,
             'metadata' => [
@@ -41,13 +44,30 @@ class TelexClient
             $data['metadata']['receiver_email'] = $receiverEmail;
         }
 
-        $data['metadata'] = array_merge($data['metadata'], $metadataOptions);
+        $data['metadata'] = array_merge($data['metadata'], $metadata);
+
+        $requestType = 'json';
+
+        if (isset($data['metadata']['attachments'])) {
+            $requestType = 'multipart';
+        }
 
         $payload = [
-            'json' => $data
+            $requestType => $data
         ];
 
-        return $this->client->request('POST', $url, $payload);
+        if (!empty($organizationKey)) {
+            $client = new Client([
+                'headers' => [
+                    'ORGANIZATION-KEY' => $organizationKey
+                ]
+            ]);
+            return $client->request('POST', $url, $payload);
+
+        } else {
+            return $this->client->request('POST', $url, $payload);
+        }
+
     }
 
 }
