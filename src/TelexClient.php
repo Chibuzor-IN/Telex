@@ -11,7 +11,7 @@ class TelexClient
     protected $telexDomain;
     protected $organizationKey;
 
-    public function __construct($organizationKey, $telexDomain='https://telex.im')
+    public function __construct($organizationKey, $telexDomain='http://localhost:8000')
     {
         $this->telexDomain = $telexDomain;
         $this->organizationKey = $organizationKey;
@@ -29,6 +29,7 @@ class TelexClient
         $receiverEmail = $options['receiver_email'] ?? '';
         $tagData = $options['tag_data'] ?? [];
         $metadata = $options['metadata'] ?? [];
+        $attachments = $options['attachments'] ?? null;
         $organizationKey = $options['organization_key'] ?? '';
 
         $data = [
@@ -36,6 +37,7 @@ class TelexClient
             'metadata' => [
                 'placeholders' => $placeholderData
             ],
+            'attachments' => $attachments,
             'event_type' => $eventName,
             'tag_data' => $tagData,
         ];
