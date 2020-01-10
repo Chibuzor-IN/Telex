@@ -11,7 +11,7 @@ class TelexClient
     protected $telexDomain;
     protected $organizationKey;
 
-    public function __construct($organizationKey, $telexDomain='http://localhost:8000')
+    public function __construct($organizationKey, $telexDomain='https://telex.im')
     {
         $this->telexDomain = $telexDomain;
         $this->organizationKey = $organizationKey;
@@ -20,6 +20,28 @@ class TelexClient
                 'ORGANIZATION-KEY' => $this->organizationKey
             ]
         ]);
+    }
+
+    private function parseArrayItem(Array $jsonInputArray, String $arrayLabel='') 
+    {
+        $multipartArray = [];
+
+        foreach ($jsonInputArray as $key => $value) {
+            $multipartKey = "[${key}]";
+            if ($arrayLabel != '') {
+                $multipartKey = "${arrayLabel}${multipartKey}";
+            }
+
+            if (gettype($value) === 'array') {
+                $nestedItems = self::parseArrayItem($value, $multipartKey);
+                $multipartArray = array_merge($multipartArray, $nestedItems);
+            } else {
+                $multipartArray[$multipartKey] = $value;
+            }
+   
+        }
+
+        return $multipartArray;
     }
 
     public function sendEvent(string $eventName, array $customer, array $placeholderData, array $options=[])
@@ -50,14 +72,41 @@ class TelexClient
 
         $requestType = 'json';
 
-        if (isset($data['metadata']['attachments'])) {
+        if (isset($attachments)) {
             $requestType = 'multipart';
+            $requestData = [];
+
+            foreach ($data as $key => $value) {
+                if (gettype($value) != 'array') {
+                    $multipartArray = [
+                        'name' => $key,
+                        'contents' => $value
+                    ];
+
+                    array_push($requestData, $multipartArray);
+                } else {
+                    
+                    $multipartArray = self::parseArrayItem($value, $key);
+                    foreach ($multipartArray as $key => $value) {
+                        $data  = [
+                            'name' => $key,
+                            'contents' => $value
+                        ];
+
+                        array_push($requestData, $data);
+                    }
+                    
+                }
+
+            }
+            
+            $data = $requestData;
         }
 
         $payload = [
             $requestType => $data
         ];
-
+        
         if (!empty($organizationKey)) {
             $client = new Client([
                 'headers' => [
