@@ -83,6 +83,10 @@ class TelexClient
                         'contents' => $value
                     ];
 
+                    if ($key = 'attachments') {
+                        $multipartArray['filename'] = str_val(time());
+                    }
+
                     array_push($requestData, $multipartArray);
                 } else {
                     
