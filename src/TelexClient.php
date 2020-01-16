@@ -83,6 +83,11 @@ class TelexClient
                         'contents' => $value
                     ];
 
+                    if ($key === 'attachments') {
+                        $filename = stream_get_meta_data($value)['uri'];
+                        $multipartArray['filename'] = $filename;
+                    }
+
                     array_push($requestData, $multipartArray);
                 } else {
                     
