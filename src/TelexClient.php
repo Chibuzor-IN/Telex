@@ -11,7 +11,7 @@ class TelexClient
     protected $telexDomain;
     protected $organizationKey;
 
-    public function __construct($organizationKey, $telexDomain='https://telex.im')
+    public function __construct($organizationKey, $telexDomain='https://messaging.telex.im')
     {
         $this->telexDomain = $telexDomain;
         $this->organizationKey = $organizationKey;
